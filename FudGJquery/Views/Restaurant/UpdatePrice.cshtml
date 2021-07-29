@@ -1,0 +1,84 @@
+﻿
+@{ ViewData["Title"] = ""; }
+@section Scripts{
+    <script>$(document).ready(() => {
+            if (localStorage.getItem('token') == "") {
+                console.log("qqqqqqqqqq");
+                $('h1').html("You are not an admin")
+                $('#disappear').hide();
+                $('h1').html("You are not logged in")
+                $('#head').show();
+            }
+
+
+            $('#btnedit').click(() => {
+                let foodid = $('#foodid').val();
+                let price = $('#price').val();
+
+                let item = { customerid: customerid, price: price };
+                console.log(item)
+
+                $.ajax({
+                    type: "PUT",
+                    url: "https://localhost:44333/api/Restaurant/" + price + "/" + foodid ,
+                    headers: { "Authorization": "Bearer " + localStorage.getItem("token") },
+                    data: JSON.stringify(item), //converts Javascript object into Json
+                    contentType: 'application/json',
+                    success: function (response) {
+
+                        $('span').html(response);
+                        window.location.reload(); //reloads the page
+                    },
+                    error: function (err) {
+                        if (err.status == 401) {
+                            console.log("error");
+                            var url = '/Login/Index'
+                            //window.location.href = url;
+                            $('p').html("You are not logged in as a restaurant owner");
+                        }
+                        else if (err.status == 403) {
+                            $('p').html("You are not logged in as a restaurant owner");
+                        }
+
+                    }
+                })
+            })
+        })</script>
+}
+<style>
+    td, h1 {
+        font-weight: bolder;
+    }
+</style>
+<div class="head">
+    <h1>Update Price</h1>
+</div>
+<div class="container" id="disappear">
+    <table class="table table-bordered">
+        <tr>
+            <td>Enter your Food Id here</td>
+            <td><input type="number" id="foodid" /></td>
+        </tr>
+        <tr>
+            <td>Updated Price</td>
+            <td><input type="number" id="price" /></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                @*<button class="btn btn-primary" id="btnsrch">Search</button>*@
+                <button class="btn btn-primary" id="btnedit">Update</button>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <span class="text-info"></span>
+                <p></p>
+            </td>
+        </tr>
+    </table>
+</div>
+@*var url = '@Url.Action("Login", "Login")';
+    window.location.href = url;*@
+
+
+

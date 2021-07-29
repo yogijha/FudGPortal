@@ -1,0 +1,108 @@
+﻿
+
+@{ ViewData["Title"] = "Login Here"; }
+<form id="form">
+    @*<p>Email</p>
+        <input type="email" name="email" id="email"><br />
+        <p>Password</p>
+        <input type="password" name="password" id="password"><br />
+        <input type="submit" name="submit" value="Log In">
+        <button class="btn btn-primary" id="btnadd">Llogin 1</button>*@
+</form>
+
+@section Scripts{
+    <script>
+        $(document).ready(() => {
+
+
+
+            //localStorage.getItem('token') == "";
+            $('#btnadd').click(() => {
+                console.log("hi");
+                let email = $('#email').val();
+                let password = $('#password').val();
+                let item = { email: email, password: password };
+                console.log(item);
+                if (email != "" && password != "") {
+                    $.ajax({
+                        type: "POST",
+                        url: "https://localhost:44333/api/login",
+                        data: JSON.stringify(item), //converts Javascript object into Json
+                        contentType: 'application/json',
+                       // headers: { "Authorization": "Bearer " + token },
+                        success: function (response) {
+                            console.log(response.token);
+                            localStorage.setItem('token', response.token);
+                            localStorage.setItem('role', response.role);
+                            localStorage.setItem('id', response.id);
+                            localStorage.setItem('name', response.name);
+                            $('span').html("Logged in as " + response.role);
+
+                           // $('span').html("Logged in as "+role);
+                           // window.location.reload(); //reloads the page
+                        },
+                        error: function (err) {
+                            if (err.status == 401) {
+                                console.log("error");
+                                $('#message').html("Invalid Attempt you are not registered");
+                                window.location.reload();
+                            }
+                            console.log(err.responseText)
+                           // $('span').html(err.responseText);
+                        }
+                    })
+                }
+                else
+                    $('#message').html("Fields can not be empty")
+            })
+
+        });
+
+
+    </script>
+}
+
+@*<p>Email</p>
+    <input type="email" name="email" id="email">
+    <br />
+    <p>Password</p>
+    <input type="password" name="password" id="password">
+    <br />
+    <button class="btn btn-primary" id="btnadd">Login</button><br />
+    <span class="text-info"></span>*@
+<style>
+    td, h1, p, span {
+        font-weight: bolder;
+    }
+</style>
+<div class="container">
+    <p>Log in to our website</p>
+    @*<p>You have to be an admin to have access to some functionality</p> *@
+    <table class="table table-bordered">
+        <tr>
+            <td>Email</td>
+            <td><input type="email" name="email" id="email"></td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td><input type="password" name="password" id="password"></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button class="btn btn-primary" id="btnadd">Login</button><br />
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <span class="text-info"></span>
+                <p id="message"></p>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+@*options.beforeSend = function (request) {
+            request.setRequestHeader("Authorization",
+    "Bearer " + sessionStorage.getItem("token"));
+        };*@

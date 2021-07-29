@@ -1,0 +1,85 @@
+﻿
+@{ ViewData["Title"] = "Register here"; }
+@section Scripts{
+    <script>$(document).ready(() => {
+
+            $('#btnadd').click(() => {
+                let title = $('#title').val();
+                let description = $('#description').val();
+                let price = Number( $('#price').val());
+                let resid = localStorage.getItem('id');
+                let item = { title: title, description: description, price: price, resid: resid };
+                console.log(item)
+                if (title != "" && description != "" && price != "" && resid != "") {
+                    $.ajax({
+                        type: "POST",
+                        url: "https://localhost:44333/api/Restaurant/AddFood",
+                        headers: { "Authorization": "Bearer " + localStorage.getItem("token") },
+                        data: JSON.stringify(item), //converts Javascript object into Json
+                        contentType: 'application/json',
+                        success: function (response) {
+                            console.log(response)
+                            $('#message').html(response);
+                            //  window.location.reload(); //reloads the page
+                        },
+                        error: function (err) {
+                            if (err.status == 401) {
+                                console.log("error");
+                                var url = '/Login/Index'
+                                //window.location.href = url;
+                                $('#message').html("You are not logged in as a restaurant owner");
+                            }
+                            else if (err.status == 403) {
+                                $('#message').html("You are not logged in as a restaurant owner");
+                            }
+                            console.log(err.responseText)
+                          //  $('p').html(err.responseText);
+                        }
+                    })
+                }
+                else
+                    $('span').html("Fields can not be empty")
+            })
+        })</script>
+}
+<style>
+    td, h1 {
+        font-weight: bolder;
+    }
+</style>
+<h1>Register a new Food here</h1>
+<div class="container">
+    <table class="table table-bordered">
+        <!--<tr>
+        <td>Customer Id</td>-->
+        @*<td>@Html.TextBox("cid")</td>*@
+        <!--</tr>-->
+        <tr>
+            <td>Title</td>
+            <td><input type="text" id="title" required /></td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td><input type="text" id="description" required /> </td>
+        </tr>
+        <tr>
+            <td>Price</td>
+            <td><input type="number" id="price" required /></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button class="btn btn-primary" id="btnadd">Add Food</button>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <span class="text-info"></span>
+                <p id="message"></p>
+            </td>
+        </tr>
+    </table>
+</div>
+
+
+
+

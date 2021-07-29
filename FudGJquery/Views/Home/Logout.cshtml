@@ -1,0 +1,40 @@
+﻿@{ ViewData["Title"] = ""; }
+@section Scripts{
+    <script>$(document).ready(() => {
+
+            if (localStorage.getItem("token") == "") {
+                $('span').html("You are not logged in");
+                console.log(localStorage.getItem("token")+"1111111111");
+                $('#mydiv').hide();
+            }
+
+            $('#yes').click(() => {
+
+                localStorage.setItem('token', "");
+                localStorage.setItem('role', "");
+                localStorage.setItem('id', -1);
+                localStorage.setItem('name', "");
+                $('span').html("Logged out");
+                window.location.reload();
+                var url = '/Login/Index'
+                window.location.href = url;
+            })
+
+        })
+        $(document).ready(()=>{
+            $('#no').click(() => {
+                var url = '/Home/Index'
+                window.location.href = url;
+            })
+        })</script>
+
+}
+<div id="mydiv">
+    <p>Are you sure you want to log out</p>
+    <br /><br />
+    <button class="btn btn-primary" id="no">No</button>
+    <br /><br />
+    <button class="btn btn-primary" id="yes">Yes</button>
+    <br /><br />
+</div>
+<span></span>

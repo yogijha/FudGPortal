@@ -1,0 +1,157 @@
+﻿
+@{ ViewData["Title"] = "Index"; }
+@section Scripts{
+    <script>
+        $(document).ready(() => {
+
+
+
+            $('#btnadd').click(() => {
+                let foodid = $('#foodid').val();
+                let customerid = localStorage.getItem('id');
+                let orderdate = $('#date').val();
+                let item = { foodid: foodid, customerid: customerid, orderdate: orderdate};
+                console.log(item)
+                $.ajax({
+                    type: "POST",
+                    url: "https://localhost:44333/api/OrderFood",
+                    headers: { "Authorization": "Bearer " + localStorage.getItem("token") },
+                    data: JSON.stringify(item), //converts Javascript object into Json
+                    contentType: 'application/json',
+                    success: function (response) {
+                        console.log(response)
+                        $('span').html(response);
+                        window.location.reload(); //reloads the page
+                    },
+                    error: function (err) {
+                        if (err.status == 401) {
+                            $('span').html("You are not logged in");
+                        }
+                        else if (err.status == 403) {
+                            $('span').html("You are not logged in");
+                        }
+                        console.log(err.responseText)
+                        $('span').html(err.responseText);
+                    }
+                })
+            })
+
+
+            function GetAllRestaurant() {
+            $.ajax({
+                type: "Get",
+                url: "https://localhost:44333/api/Restaurant",
+                headers: { "Authorization": "Bearer " + localStorage.getItem("token") },
+                // dataType: "json",
+                contentType: "application/json",
+                success: function (res) {
+                    $.each(res, function (i, value) {
+                        console.log(res)
+                        $("#drop1").append($("<option></option>").val(value.resid).html(value.resname));
+                        id = $('#drop1').val();
+                        console.log(id + " Food id");
+                        //GetAllFood();
+                    })
+                },
+                error: function (err) {
+                    if (err.status == 401) {
+                        // $('span').html("You are not logged in");
+                        $('p').html("You are not logged in,Please log in or Register yourself ")
+                    }
+                    else if (err.status == 403) {
+                        $('p').html("You are not logged in,Please log in or Register yourself ")
+                    }
+                    console.log(err.responseText)
+                    $('span').html(err.responseText);
+                }
+            })
+         }
+            GetAllRestaurant();
+
+            $('#search').click(() => {
+                let id = $('#drop1').val();
+                console.log(id + " Food id2");
+                $(".list tr:gt(1)").remove();
+                $(".dis").remove();
+                $.ajax({
+                    type: "Get",
+                    url: "https://localhost:44333/api/Restaurant/"+id,
+                    headers: { "Authorization": "Bearer " + localStorage.getItem("token") },
+                    // dataType: "json",
+                    contentType: "application/json",
+                    success: function (res) {
+                        $.each(res, function (i, item) {
+                            console.log(res)
+                            $("#drop2").append($("<option></option>").val(item.foodid).html(item.title));
+                            console.log(item.foodid);
+
+                            let row = '<tr class="dis"><td>' + item.foodid + '</td><td>' + item.title + '</td><td>' + item.description + '</td><td>'+ item.price + '</td><td>';
+                            console.log(row);
+                            $('#list').append(row);
+                        })
+                    },
+                    error: function (err) {
+                        if (err.status == 401) {
+                            console.log("error");
+                            var url = '/Login/Index'
+                            //window.location.href = url;
+                            $('p').html("You are not a customer, log in as a customer");
+                        }
+                        else if (err.status == 403) {
+                            $('p').html("You are not a customer, log in as a customer");
+                        }
+                        console.log(err.responseText)
+                        $('span').html(err.responseText);
+                    }
+
+                })
+            })
+          //  GetAllFood();
+        })
+    </script>
+}
+<h1>Food Ordering</h1>
+<div class="container">
+    <table class="table table-striped">
+        <tr>
+            <td>Restaurant</td>
+            <td><select id="drop1"><option value="0">--Select Restaurant--</option></select></td>
+            <td> <a class="nav-link text-dark" asp-area="" asp-controller="Restaurant" asp-action="Index">Register a new Restaurant</a></td>
+        </tr>
+        <tr>
+            <td>Food</td>
+            @*<td><select id="drop2"><option value="0">--Select Show--</option></select></td>*@
+            <td> <button class="btn btn-primary" id="search">Search Food</button></td>
+            <td>Enter the food id here and place a order <input type="number" id="foodid" /></td>
+            <td> <a class="nav-link text-dark" asp-area="" asp-controller="Restaurant" asp-action="AddFood">Add Food</a></td>
+        </tr>
+        <tr>
+            <td>Date</td>
+            <td><input type="date" id="date" /></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button class="btn btn-primary" id="btnadd">Order Item</button>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <span class="text-info"></span>
+                <p style="font-weight:bolder"></p>
+            </td>
+        </tr>
+    </table>
+</div>
+<div class="container">
+    <table class="table table-bordered" id="list">
+        <tr>
+            <th>FoodId</th>
+            <th>title</th>
+            <th>Description</th>
+            <th>Price</th>
+        </tr>
+    </table>
+</div>
+
+
+

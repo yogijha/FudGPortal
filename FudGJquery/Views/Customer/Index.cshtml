@@ -1,0 +1,90 @@
+﻿
+@{ ViewData["Title"] = "Register here"; }
+@section Scripts{
+    <script>$(document).ready(() => {
+
+            $('#btnadd').click(() => {
+                let customername = $('#name').val();
+                let customeraddress = $('#address').val();
+                let emailid = $('#email').val();
+                let phonenumber = $('#number').val();
+                let password = $('#password').val();
+                let item = { customername: customername, customeraddress: customeraddress, emailid: emailid, phonenumber: phonenumber, password: password };
+                console.log(item)
+                if (customername != "" && customeraddress != "" && emailid != "" && phonenumber != "" && password != "") {
+                    $.ajax({
+                        type: "POST",
+                        url: "https://localhost:44333/api/Customer",
+                        data: JSON.stringify(item), //converts Javascript object into Json
+                        contentType: 'application/json',
+                        success: function (response) {
+                            console.log(response)
+                            var url = '/Login/Index'
+                            //window.location.href = url;
+                            $('p').html(response);
+                            //  window.location.reload(); //reloads the page
+                        },
+                        error: function (err) {
+                            if (err.status == 401) {
+                                console.log("error");
+                            }
+                            console.log(err.responseText)
+                            $('p').html(err.responseText);
+                        }
+                    })
+                }
+                else
+                    $('span').html("Fields can not be empty")
+            })
+        })</script>
+}
+<style>
+    td, h1 {
+        font-weight: bolder;
+    }
+</style>
+<h1>Register a new Customer here</h1>
+<div class="container">
+    <table class="table table-bordered">
+        <!--<tr>
+        <td>Customer Id</td>-->
+        @*<td>@Html.TextBox("cid")</td>*@
+        <!--</tr>-->
+        <tr>
+            <td>Name</td>
+            <td><input type="text" id="name" required /></td>
+        </tr>
+        <tr>
+            <td>Address</td>
+            <td><input type="text" id="address" required /> </td>
+        </tr>
+        <tr>
+            <td>Email</td>
+            <td><input type="email" id="email" required /></td>
+        </tr>
+        <tr>
+            <td>Contact Number</td>
+            <td><input type="number" id="number" required /></td>
+        </tr>
+        <tr>
+            <td>Password</td>
+            <td><input type="password" id="password" required /></td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <button class="btn btn-success" id="btnadd">Add</button>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <span class="text-info"></span>
+                <p></p>
+            </td>
+        </tr>
+    </table>
+    @Html.ActionLink("Click here to update Password", "UpdatePassword")
+</div>
+
+
+
+
